@@ -1,25 +1,21 @@
 function [Alk_out,DIC_out,pH_out,Omega_ca_out,pCO2_out,c,vargout] = ...
     phreeqc_oomega_aragonite(T_in,Ca_in,Mg_in,K_in,SO4_in,Na_in,...
     Cl_in,pCO2_in,Omega_in)
-% PHREEQCO2 Use PHREEQC to compute equilibrium carbonate system from any
-% pair of DIC, ALK, pCO2, or pH
-%
-%   Ted Present, 2020
-%   Requires installation of <a href="matlab:
-%   web('https://www.usgs.gov/software/phreeqc-version-3')">IPhreeqcCOM</a>.
-% 
-%   
-%
-%   For more information, see the <a href="matlab:
-%   web('https://www.usgs.gov/software/phreeqc-version-3')">USGS PHREEQC website</a>.
-%
-%   See also CO2SYS.
-try
-%% Defaults
-% Default database location:
-default_db = 'C:\Program Files\USGS\IPhreeqcCOM 3.7.1-15876\database\phreeqc.dat';
+% PHREEQC_OOMEGA_ARAGONITE Use PHREEQC to compute Alk, DIC, pH, and
+% Omega_calcite from Omega_aragonite estimated via ooid size data
 
-%% Convert numeric compositions to text to feed to COM server
+% This code was developed by Lizzy Trower with Matlab R2021b, based on a
+% Matlab function developed by Ted Present (PHREEQCO2).
+
+try
+
+% Default database location:
+default_db = ...
+    'C:\Program Files\USGS\IPhreeqcCOM 3.7.1-15876\database\phreeqc.dat';
+%depending on your installation, this file location or name may need to be
+%updated!!!
+
+% Convert numeric compositions to text to feed to COM server
 s_temp = num2str(T_in);
 s_Ca = num2str(Ca_in);
 s_Mg = num2str(Mg_in);
@@ -29,7 +25,7 @@ s_Na = num2str(Na_in);
 s_Cl = num2str(Cl_in);
 s_logPCO2 = num2str(log10(pCO2_in/1e6));
 
-%% Script and run PHREEQC
+% Script and run PHREEQC
 % initialize IPhreeqcCOM server and database
 ipc = actxserver('IPhreeqcCOM.Object');
 ipc.LoadDatabase(default_db);
@@ -58,8 +54,6 @@ ipc.AccumulateLine ('si aragonite');
 ipc.AccumulateLine ('si calcite');
 ipc.AccumulateLine ('si dolomite');
 ipc.AccumulateLine ('si CO2(g)');
-%ipc.AccumulateLine ('si gypsum');
-%ipc.AccumulateLine ('si halite');
 ipc.AccumulateLine ('-ph  true');
 ipc.AccumulateLine ('-temperature  true');
 ipc.AccumulateLine ('-alkalinity  true');
@@ -74,9 +68,7 @@ switch nargout
         c = output;
     otherwise
         c = output;
-        vargout = []; % find a way to order output manually
-%         idx = find(strcmp(output,'si_halite'));
-%         vargout(idx) = output{idx,2};
+        vargout = [];
 end
 Alk_out = cell2mat(c(3,2));
 DIC_out = cell2mat(c(4,2));

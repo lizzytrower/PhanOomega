@@ -1,19 +1,11 @@
 function [Alk_out,DIC_out,pH_out,Omega_ar_out,c,vargout] = ...
     phreeqc_oomega_calcite(T_in,Ca_in,Mg_in,K_in,SO4_in,Na_in,...
 Cl_in,pCO2_in,Omega_in)
-% PHREEQCO2 Use PHREEQC to compute equilibrium carbonate system from any
-% pair of DIC, ALK, pCO2, or pH
-%
-%   Ted Present, 2020
-%   Requires installation of <a href="matlab:
-%   web('https://www.usgs.gov/software/phreeqc-version-3')">IPhreeqcCOM</a>.
-% 
-%   
-%
-%   For more information, see the <a href="matlab:
-%   web('https://www.usgs.gov/software/phreeqc-version-3')">USGS PHREEQC website</a>.
-%
-%   See also CO2SYS.
+% PHREEQC_OOMEGA_CALCITE Use PHREEQC to compute Alk, DIC, pH, and
+% Omega_aragonite from Omega_calcite estimated via ooid size data
+
+% This code was developed by Lizzy Trower with Matlab R2021b, based on a
+% Matlab function developed by Ted Present (PHREEQCO2).
 try
 %% Defaults
 % Default database location:
@@ -58,8 +50,6 @@ ipc.AccumulateLine ('si aragonite');
 ipc.AccumulateLine ('si calcite');
 ipc.AccumulateLine ('si dolomite');
 ipc.AccumulateLine ('si CO2(g)');
-%ipc.AccumulateLine ('si gypsum');
-%ipc.AccumulateLine ('si halite');
 ipc.AccumulateLine ('-ph  true');
 ipc.AccumulateLine ('-temperature  true');
 ipc.AccumulateLine ('-alkalinity  true');
@@ -74,9 +64,7 @@ switch nargout
         c = output;
     otherwise
         c = output;
-        vargout = []; % find a way to order output manually
-%         idx = find(strcmp(output,'si_halite'));
-%         vargout(idx) = output{idx,2};
+        vargout = []; 
 end
 Alk_out = cell2mat(c(3,2));
 DIC_out = cell2mat(c(4,2));
