@@ -5,7 +5,7 @@
 %This code will regenerate the figures in the main text.
 
 %This code was written by Lizzy Trower in Matlab R2021b. This version was
-%last edited in May 2022.
+%last edited in October 2022.
 
 %%
 clear
@@ -24,7 +24,7 @@ load('AKdata_formation.mat','paleolat')
 %>5% of simulations are large enough to abrade (so pretty conservative in
 %excluding data).
 
-Stokes_95 = prctile(Stokes,95,2);
+Stokes_95 = prctile(real(Stokes),95,2);
 Stokes_thresh = find(Stokes_95>=9);
 
 Omega_ca = Omega_ca(Stokes_thresh,:);
@@ -54,14 +54,19 @@ RidgwellOmega = readmatrix('Ridgwell_Omega.xlsx','Range','A2:B131');
 ArvidsonOmega = readmatrix('Arvidson_Omega.xlsx','Range','A2:B47');
 Arvidson2013Omega = readmatrix('Arvidson2013_Omega.xlsx','Range','A2:B80');
 RidingLiangOmega = readmatrix('Riding_Liang_Omega.xlsx','Range','A2:B52');
-AloisiOmega = readmatrix('Aloisi_Omega.xlsx','Range','A2:B144');
+AloisiOmega = readmatrix('Aloisi_Omega_update.xlsx','Range','A2:B152');
+AloisiOmega_cats = categorical(readcell('Aloisi_Omega_update.xlsx',...
+    'Range','C2:C152'));
+AloisiOmega_mins = AloisiOmega(AloisiOmega_cats == 'min',:);
+AloisiOmega_maxs = AloisiOmega(AloisiOmega_cats == 'max',:);
 
 plot(RidgwellOmega(:,1),RidgwellOmega(:,2),'Color',colors_lines(1,:))
 hold on
 plot(ArvidsonOmega(:,1),ArvidsonOmega(:,2),'Color',colors_lines(2,:))
 plot(RidingLiangOmega(:,1),RidingLiangOmega(:,2),'Color',colors_lines(4,:))
 plot(Arvidson2013Omega(:,1),Arvidson2013Omega(:,2),'Color',colors_lines(3,:))
-plot(AloisiOmega(:,1),AloisiOmega(:,2),'Color',colors_lines(7,:))
+plot(AloisiOmega_mins(:,1),AloisiOmega_mins(:,2),'Color',colors_lines(7,:))
+plot(AloisiOmega_maxs(:,1),AloisiOmega_maxs(:,2),'r')
 xlim([0 550])
 set(gca, 'xdir', 'reverse')
 box on
@@ -198,7 +203,11 @@ RidingLiangpH = readmatrix('Riding_Liang_pH.xlsx','Range','A2:B77');
 ZT19Alkn = readmatrix("ZT19.Alkn.xlsx",'Range','A2:F255');
 ZT19GCRB = readmatrix("ZT19.GCRB.xlsx",'Sheet','ZT19 GCRB','Range',...
     'B2:G13');
-AloisipH = readmatrix('Aloisi_pH.xlsx','Range','A2:B150');
+AloisipH = readmatrix('Aloisi_pH_update.xlsx','Range','A2:B165');
+AloisipH_cats = categorical(readcell('Aloisi_pH_update.xlsx',...
+    'Range','C2:C165'));
+AloisipH_mins = AloisipH(AloisipH_cats == 'min',:);
+AloisipH_maxs = AloisipH(AloisipH_cats == 'max',:);
 
 Anagnostou_pH = readmatrix('Anagnostou_pHproxydata.xlsx','Sheet',...
     'Table 1','Range','I6:I95');
@@ -244,7 +253,8 @@ plot(RidingLiangpH(:,1),RidingLiangpH(:,2),'Color',colors_lines(4,:));
 plot(ZT19Alkn(:,1),ZT19Alkn(:,6),'Color',colors_lines(5,:))
 plot(ZT19GCRB(:,1),ZT19GCRB(:,6),'Color',colors_lines(6,:))
 plot(Arvidson2013pH(:,1),Arvidson2013pH(:,2),'Color',colors_lines(3,:));
-plot(AloisipH(:,1),AloisipH(:,2),'Color',colors_lines(7,:))
+plot(AloisipH_mins(:,1),AloisipH_mins(:,2),'Color',colors_lines(7,:))
+plot(AloisipH_maxs(:,1),AloisipH_maxs(:,2),'r')
 scatter(Anagnostou_age,Anagnostou_pH,[],colors_pts(1,:),'.')
 %scatter(Sosdian_pH_pp_age,Sosdian_pH_pp,[],colors_pts(2,:),'.')
 scatter(Sosdian_pH_ng_age,Sosdian_pH_ng,[],colors_pts(2,:),'.')
@@ -518,12 +528,18 @@ ylim([0 10])
 
 t_data1_ax7 = nexttile;
 
-AloisiAlk = readmatrix('Aloisi_Alk.xlsx','Range','A2:B220');
+AloisiAlk = readmatrix('Aloisi_Alk_update.xlsx','Range','A2:B241');
+AloisiAlk_cats = categorical(readcell('Aloisi_Alk_update.xlsx',...
+    'Range','C2:C241'));
+AloisiAlk_mins = AloisiAlk(AloisiAlk_cats == 'min',:);
+AloisiAlk_maxs = AloisiAlk(AloisiAlk_cats == 'max',:);
+
 
 plot(ZT19Alkn(:,1),ZT19Alkn(:,5),'Color',colors_lines(5,:))
 hold on
 plot(ZT19GCRB(:,1),ZT19GCRB(:,5),'Color',colors_lines(6,:))
-plot(AloisiAlk(:,1),AloisiAlk(:,2),'Color',colors_lines(7,:))
+plot(AloisiAlk_mins(:,1),AloisiAlk_mins(:,2),'Color',colors_lines(7,:))
+plot(AloisiAlk_maxs(:,1),AloisiAlk_maxs(:,2),'r')
 xlim([0 550])
 set(gca, 'xdir', 'reverse')
 box on
@@ -794,15 +810,15 @@ ylim([0 30])
 title('seawater \Omega reconstructed via ooid size')
 
 t_data2_ax2 = nexttile;
-microbereefs = readmatrix('Kiessling_reeftypedata.xlsx','Range',...
-    'B2:C33');
+microbereefs = readmatrix('Kiessling_2009_data_clean.xlsx','Range',...
+    'B2:E56');
 edges2 = flip([microbereefs(:,2);0])';
-counts2 = flip(microbereefs(:,1))';
+counts2 = flip(microbereefs(:,4))';
 histogram('BinEdges',edges2,'BinCounts',counts2)
 xlim([0 550])
 set(gca, 'xdir', 'reverse')
-ylabel('microbial reefs (% of all reefs)')
-title('microbial reef abundance (Kiessling 2002)')
+ylabel('number of microbial reefs')
+title('microbial reef abundance (Kiessling 2009)')
 
 t_data2_ax3 = nexttile;
 calc_cyano = readmatrix('Arp_SupplTab2.xls','Range','E5:F532');
@@ -838,14 +854,14 @@ edges5 = [Smith_etal_data(:,1);0];
 tepeecounts = Smith_etal_data(:,6);
 pisoidcounts = Smith_etal_data(:,7);
 
-%yyaxis left
 histogram('BinEdges',flip(edges5)','BinCounts',flip(tepeecounts)');
 hold on
-%yyaxis right
 histogram('BinEdges',flip(edges5)','BinCounts',flip(pisoidcounts)')
 box on
 xlim([0 550])
 set(gca, 'xdir', 'reverse')
+ylabel('abundance of tepees or pisoids')
+title('arid coastal carbonates (Smith et al. 2021)')
 
 linkaxes([t_data2_ax1,t_data2_ax2,t_data2_ax3,t_data2_ax4,...
     t_data2_ax5],'x')
